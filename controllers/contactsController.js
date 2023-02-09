@@ -40,34 +40,38 @@ const getContactByIdController = async (req, res) => {
     return res.status(200).json({ contact })
 }
 const postContactsController = async (req, res) => {
-    const { name, email, phone, favorite } = req.body;
-    const newContact = {
-        name,
-        email,
-        phone,
-        favorite: !!favorite
+    try {
+        const { name, email, phone, favorite } = req.body;
+        const newContact = {
+            name,
+            email,
+            phone,
+            favorite
+        }
+        if (name && email && phone) {
+            const contact = await addContact(newContact);
+            await contact.save();
+            return res.status(200).json({ contact, status: 'success' })
+        } else {
+            return res.status(404).json({ message: "no Body" })
+        }
+    } catch (error) {
+        return res.json({ error });
     }
-    if (name && email && phone) {
-        const contact = await addContact(newContact);
-        await contact.save();
-        return res.status(200).json({ contact, status: 'success' })
-    }
-    return res.status(404).json({ message: "no Body" })
+
 }
 const updateContactsController = async (req, res) => {
     const id = req.params.contactId;
     const { name, email, phone } = req.body;
-    if (name && email && phone) {
-        const updatedContact = await updateContact(id, req.body)
-        if (updatedContact) {
-            const contact = await Contact.findById(id)
-            return res.status(200).json({ contact, message: 'success' })
-        } else {
-            return res.status(404).json({ message: "Not found" })
-        }
-    } else {
-        return res.status(403).json({ message: "Not body" })
+    if (!name && !email && !phone) {
+        return res.status(403).json({ message: "missing Fields" })
     }
+    const updatedContact = await updateContact(id, req.body)
+    if (updatedContact) {
+        const contact = await Contact.findById(id)
+        return res.status(200).json({ contact, message: 'success' })
+    }
+    return res.status(404).json({ message: "Not found" })
 }
 const deleteContactsController = async (req, res) => {
     const id = req.params.contactId;

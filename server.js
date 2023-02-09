@@ -12,7 +12,8 @@ const start = async () => {
       console.log(`Server running. Use our API on port:${port} `)
     })
   } catch (error) {
-
+    console.log('error: ', error.code);
+    process.exit(1);
   }
 }
 start();
