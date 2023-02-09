@@ -48,13 +48,12 @@ const postContactsController = async (req, res) => {
             phone,
             favorite
         }
-        if (name && email && phone) {
-            const contact = await addContact(newContact);
-            await contact.save();
-            return res.status(200).json({ contact, status: 'success' })
-        } else {
-            return res.status(404).json({ message: "no Body" })
+        if (!name && !email && !phone) {
+            return res.status(400).json({ message: "missing fields" })
         }
+        const contact = await addContact(newContact);
+        await contact.save();
+        return res.status(201).json({ contact, status: 'success' })
     } catch (error) {
         return res.json({ error });
     }
@@ -64,7 +63,7 @@ const updateContactsController = async (req, res) => {
     const id = req.params.contactId;
     const { name, email, phone } = req.body;
     if (!name && !email && !phone) {
-        return res.status(403).json({ message: "missing Fields" })
+        return res.status(400).json({ message: "missing Fields" })
     }
     const updatedContact = await updateContact(id, req.body)
     if (updatedContact) {
