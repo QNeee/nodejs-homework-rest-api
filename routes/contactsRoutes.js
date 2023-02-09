@@ -5,7 +5,7 @@ const { getContactsController,
     getContactByIdController,
     updateContactsController,
     deleteContactsController,
-    patchContactsFavorite } = require('../controllers/contactsController');
+    patchContactsFavoriteController } = require('../controllers/contactsController');
 
 const { postContactValidation, putContactValidation } = require('../middlewares/validationmiddleware')
 router.get('/', getContactsController);
@@ -13,5 +13,5 @@ router.get('/:contactId', getContactByIdController);
 router.post('/', postContactValidation, postContactsController);
 router.put('/:contactId', putContactValidation, updateContactsController);
 router.delete('/:contactId', deleteContactsController);
-router.patch('/:contactId/favorite', putContactValidation, patchContactsFavorite)
+router.patch('/:contactId/favorite', putContactValidation, patchContactsFavoriteController)
 module.exports = router;

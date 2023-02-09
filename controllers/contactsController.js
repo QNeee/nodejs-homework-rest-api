@@ -82,7 +82,7 @@ const deleteContactsController = async (req, res) => {
         return res.status(404).json({ message: "Not found" })
     }
 }
-const patchContactsFavorite = async (req, res) => {
+const patchContactsFavoriteController = async (req, res) => {
     const id = req.params.contactId;
     const bodyFavorite = req.body.favorite;
     if (!bodyFavorite) {
@@ -102,5 +102,5 @@ module.exports = {
     getContactByIdController,
     updateContactsController,
     deleteContactsController,
-    patchContactsFavorite
+    patchContactsFavoriteController
 }
