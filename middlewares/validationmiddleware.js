@@ -1,5 +1,16 @@
 const Joi = require('joi');
-
+const registerValidation = (req, res, next) => {
+    const schema = Joi.object({
+        email: Joi.string()
+            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
+        password: Joi.string().required()
+    })
+    const validationResult = schema.validate(req.body);
+    if (validationResult.error) {
+        return res.status(400).json({ status: validationResult.error.details })
+    }
+    next();
+}
 const postContactValidation = (req, res, next) => {
     const schema = Joi.object({
         name: Joi.string().alphanum()
@@ -14,6 +25,7 @@ const postContactValidation = (req, res, next) => {
             .required(),
         favorite: Joi.boolean().optional()
     })
+
     const validationResult = schema.validate(req.body);
     if (validationResult.error) {
         return res.status(400).json({ status: validationResult.error.details })
@@ -42,5 +54,7 @@ const putContactValidation = (req, res, next) => {
 }
 module.exports = {
     postContactValidation,
-    putContactValidation
+    putContactValidation,
+    registerValidation,
+
 }

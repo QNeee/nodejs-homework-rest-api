@@ -4,6 +4,7 @@ const contactScheme = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Set name for contact'],
+        unique: true
     },
     email: {
         type: String,
@@ -15,6 +16,10 @@ const contactScheme = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    owner: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'user',
+    }
 
 })
 const Contact = mongoose.model('Contact', contactScheme);

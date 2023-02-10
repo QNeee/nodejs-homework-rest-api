@@ -9,6 +9,8 @@ const { getContactsController,
     patchContactsFavoriteController } = require('../controllers/contactsController');
 
 const { postContactValidation, putContactValidation } = require('../middlewares/validationmiddleware')
+const { authMiddleware } = require('../middlewares/authMiddleware')
+router.use(authMiddleware);
 router.get('/', getContactsController);
 router.get('/:contactId', asyncWrapper(getContactByIdController));
 router.post('/', postContactValidation, asyncWrapper(postContactsController));

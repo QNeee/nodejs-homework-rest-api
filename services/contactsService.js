@@ -2,13 +2,13 @@ const { Contact } = require('../db/contactsModel');
 const { NotFound, WrongParametersError } = require('../helpers/errors')
 
 
-const listContacts = async () => {
-    const contacts = await Contact.find({});
+const listContacts = async (owner) => {
+    const contacts = await Contact.find({ owner });
     return contacts;
 }
 
-const getContactById = async (contactId) => {
-    const deletedContact = await Contact.findById(contactId);
+const getContactById = async (contactId, owner) => {
+    const deletedContact = await Contact.findOne({ contactId, owner });
     if (!deletedContact) {
         throw new NotFound("Not found")
     }
@@ -23,8 +23,8 @@ const addContact = async (body) => {
     await contact.save();
     return contact;
 }
-const removeContact = async (contactId) => {
-    const deletedContact = await Contact.findByIdAndRemove(contactId);
+const removeContact = async (contactId, owner) => {
+    const deletedContact = await Contact.findOneAndRemove({ contactId, owner });
     if (!deletedContact) {
         throw new NotFound("Not Found")
     }
@@ -32,29 +32,29 @@ const removeContact = async (contactId) => {
 }
 
 
-const updateContact = async (contactId, body) => {
+const updateContact = async (id, owner, body) => {
     const { name, email, phone } = body;
     if (!name && !email && !phone) {
         throw new WrongParametersError('Missing Fields');
     }
-    const updatedContact = await Contact.findByIdAndUpdate(contactId, { $set: body })
+    const updatedContact = await Contact.findOneAndUpdate({ _id: id, owner }, { $set: body })
     if (updatedContact) {
-        const contact = await Contact.findById(contactId)
+        const contact = await Contact.findById(id)
         return contact;
     } else {
         throw new NotFound('Not Found')
     }
 }
-const updateStatusContact = async (contactId, body) => {
+const updateStatusContact = async (id, owner, body) => {
     const bodyFavorite = body.favorite;
     if (!bodyFavorite) {
-        throw new WrongParametersError('Missing Fields')
+        throw new WrongParametersError('Missing Fields favorite')
     }
-    const patchedContact = await Contact.findByIdAndUpdate(contactId, { $set: body })
+    const patchedContact = await Contact.findOneAndUpdate({ _id: id, owner }, { $set: body })
     if (!patchedContact) {
         throw new NotFound('Not Found')
     }
-    const updatedStatusContact = await Contact.findById(contactId)
+    const updatedStatusContact = await Contact.findById(id)
     return updatedStatusContact;
 }
 
