@@ -1,7 +1,7 @@
 const { User } = require('../db/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { NotAuthorized, RegistrationConflictError } = require('../helpers/errors')
+const { NotAuthorized, RegistrationConflictError, WrongParametersError, NotFound } = require('../helpers/errors')
 const register = async (email, password) => {
     const user = new User({
         email, password
@@ -52,9 +52,32 @@ const current = async (owner) => {
     }
     return currentResponse;
 }
+const patchUsersSubscription = async (owner, body) => {
+    const user = await User.findById(owner);
+    const sub = body.subscription;
+    if (!user) {
+        throw new NotAuthorized("Not authorized");
+    }
+    if (sub !== 'starter' && sub !== 'pro' && sub !== 'business') {
+        throw new WrongParametersError('subscription must be starter||pro||business ')
+    }
+    await User.findOneAndUpdate({ owner }, { $set: { sub } })
+    const updatedStatusUser = await User.findById(owner)
+    if (updatedStatusUser) {
+        const updatedUser = {
+            email: updatedStatusUser.email,
+            subscription: sub
+        }
+        return updatedUser;
+    } else {
+        throw new NotFound('Not Found');
+    }
+
+}
 module.exports = {
     register,
     login,
     logout,
-    current
+    current,
+    patchUsersSubscription
 }

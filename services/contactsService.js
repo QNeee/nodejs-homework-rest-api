@@ -12,12 +12,12 @@ const listContacts = async (owner, { limit, skip, favorite }) => {
         } else {
             favorite = false;
         }
-        const contacts = await Contact.find({ owner });
+        const contacts = await Contact.find({ owner }).select({ __v: 0 });
         const filtered = contacts.filter(item => item.favorite === favorite);
         return filtered;
     }
     else {
-        const contacts = await Contact.find({ owner }).limit(limit);
+        const contacts = await Contact.find({ owner }).select({ __v: 0 }).limit(limit);
         return contacts;
     }
 }

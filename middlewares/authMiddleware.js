@@ -7,6 +7,7 @@ const authMiddleware = async (req, res, next) => {
         if (!token) {
             next(new NotAuthorized('Please ,provide a token'));
         }
+
         const user = jwt.decode(token, process.env.JWT_SECRET);
         req.token = token;
         req.user = user;
