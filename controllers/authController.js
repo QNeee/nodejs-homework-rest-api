@@ -26,12 +26,8 @@ const logOutController = async (req, res) => {
 }
 const currentController = async (req, res) => {
     const { _id: owner } = req.user;
-    await current(owner);
-    const currentResponse = {
-        email: req.email,
-        subscription: req.subscription
-    }
-    return res.status(200).json({ currentResponse });
+    const response = await current(owner);
+    return res.status(200).json({ response });
 }
 module.exports = {
     registerController,

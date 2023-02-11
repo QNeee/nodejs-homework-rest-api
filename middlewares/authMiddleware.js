@@ -9,12 +9,8 @@ const authMiddleware = async (req, res, next) => {
     }
     try {
         const user = jwt.decode(token, process.env.JWT_SECRET);
-        const id = user._id;
-        const findUser = await User.findById(id);
         req.token = token;
         req.user = user;
-        req.email = findUser.email;
-        req.subscription = findUser.subscription;
         next();
     } catch (error) {
         throw new NotAuthorized('Invalid Token')

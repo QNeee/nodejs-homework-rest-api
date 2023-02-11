@@ -42,11 +42,15 @@ const logout = async (owner) => {
 
 }
 const current = async (owner) => {
-    const user = User.findById({ _id: owner });
+    const user = await User.findById(owner);
+    const currentResponse = {
+        email: user.email,
+        subscription: user.subscription
+    }
     if (!user) {
         throw new NotAuthorized("Not authorized");
     }
-
+    return currentResponse;
 }
 module.exports = {
     register,
