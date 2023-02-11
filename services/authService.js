@@ -29,12 +29,28 @@ const login = async (email, password) => {
         }
         const token = jwt.sign({
             _id: user._id,
-            createdAt: user.createdAt
+            createdAt: user.createdAt,
         }, process.env.JWT_SECRET)
         return { token, user };
     }
 }
+const logout = async (owner) => {
+    const user = await User.findByIdAndUpdate(owner, { token: "" });
+    if (!user) {
+        throw new NotAuthorized("Not authorized");
+    }
+
+}
+const current = async (owner) => {
+    const user = User.findById({ _id: owner });
+    if (!user) {
+        throw new NotAuthorized("Not authorized");
+    }
+
+}
 module.exports = {
     register,
-    login
+    login,
+    logout,
+    current
 }
