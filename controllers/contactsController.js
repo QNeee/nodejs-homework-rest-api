@@ -8,8 +8,28 @@ const { listContacts,
 
 const getContactsController = async (req, res) => {
     const { _id: owner } = req.user;
-    const contacts = await listContacts(owner);
-    return res.status(200).json({ contacts });
+    let {
+        page = 0,
+        limit = 5,
+        skip = 0,
+        favorite
+    } = req.query;
+    if (page && limit) {
+        limit = limit > 5 ? 5 : limit;
+        skip = limit * page;
+        const contacts = await listContacts(owner, { limit, skip });
+        return res.status(200).json({ contacts });
+    } else if (favorite) {
+        favorite = favorite.toString();
+        const contacts = await listContacts(owner, { favorite });
+        console.log(contacts);
+        return res.status(200).json({ contacts });
+    }
+    else {
+        const contacts = await listContacts(owner, { limit });
+        return res.status(200).json({ contacts });
+    }
+
 }
 const getContactByIdController = async (req, res) => {
     const { _id: owner } = req.user;

@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const { NotAuthorized } = require('../helpers/errors')
-const { User } = require('../db/userModel');
 
 const authMiddleware = async (req, res, next) => {
     try {

@@ -2,9 +2,24 @@ const { Contact } = require('../db/contactsModel');
 const { NotFound, WrongParametersError } = require('../helpers/errors')
 
 
-const listContacts = async (owner) => {
-    const contacts = await Contact.find({ owner });
-    return contacts;
+const listContacts = async (owner, { limit, skip, favorite }) => {
+    if (limit && skip) {
+        const contacts = await Contact.find({ owner }).select({ __v: 0 }).skip(skip).limit(limit);
+        return contacts;
+    } else if (favorite) {
+        if (favorite === 'true') {
+            favorite = true;
+        } else {
+            favorite = false;
+        }
+        const contacts = await Contact.find({ owner });
+        const filtered = contacts.filter(item => item.favorite === favorite);
+        return filtered;
+    }
+    else {
+        const contacts = await Contact.find({ owner }).limit(limit);
+        return contacts;
+    }
 }
 
 const getContactById = async (contactId, owner) => {

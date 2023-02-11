@@ -22,7 +22,7 @@ const loginController = async (req, res) => {
 const logOutController = async (req, res) => {
     const { _id: owner } = req.user;
     await logout(owner);
-    return res.status(204).json();
+    return res.status(204).json({});
 }
 const currentController = async (req, res) => {
     const { _id: owner } = req.user;
