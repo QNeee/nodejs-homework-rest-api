@@ -10,14 +10,14 @@ const getContactsController = async (req, res) => {
     const { _id: owner } = req.user;
     const limitNumber = 5;
     let {
-        page = 0,
+        page = 1,
         limit = limitNumber,
         skip = 0,
         favorite
     } = req.query;
     if (page && limit) {
-        limit = limit > limitNumber ? limitNumber : limit;
-        skip = limit * page;
+        limit = parseInt(limit) > limitNumber ? limitNumber : parseInt(limit);
+        skip = parseInt(page) === 1 ? skip.toString() : parseInt(page) * limit - limitNumber;
         const contacts = await listContacts(owner, { limit, skip });
         return res.status(200).json({ contacts });
     } else if (favorite) {

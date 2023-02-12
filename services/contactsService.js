@@ -4,6 +4,7 @@ const { NotFound, WrongParametersError } = require('../helpers/errors')
 
 const listContacts = async (owner, { limit, skip, favorite }) => {
     if (limit && skip) {
+        console.log(skip);
         const contacts = await Contact.find({ owner }).select({ __v: 0 }).skip(skip).limit(limit);
         return contacts;
     } else if (favorite) {
@@ -40,7 +41,6 @@ const addContact = async (body) => {
     return contact;
 }
 const removeContact = async (contactId, owner) => {
-    console.log(contactId);
     const deletedContact = await Contact.findOneAndRemove({ contactId, owner });
     if (!deletedContact) {
         throw new NotFound("Not Found")
