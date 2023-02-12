@@ -33,7 +33,7 @@ const getContactsController = async (req, res) => {
 }
 const getContactByIdController = async (req, res) => {
     const { _id: owner } = req.user;
-    const { id: contactId } = req.params;
+    const { contactId } = req.params;
     const contact = await getContactById(contactId, owner);
     return res.status(200).json({ contact })
 }
@@ -59,7 +59,7 @@ const updateContactsController = async (req, res) => {
 }
 const deleteContactsController = async (req, res) => {
     const { _id: owner } = req.user;
-    const { id: contactId } = req.params;
+    const { contactId } = req.params;
     const deletedContact = await removeContact(contactId, owner);
     return res.status(200).json({ deletedContact, message: "contact deleted" })
 }

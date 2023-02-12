@@ -24,6 +24,7 @@ const listContacts = async (owner, { limit, skip, favorite }) => {
 
 const getContactById = async (contactId, owner) => {
     const deletedContact = await Contact.findOne({ contactId, owner });
+    console.log(deletedContact);
     if (!deletedContact) {
         throw new NotFound("Not found")
     }
@@ -39,6 +40,7 @@ const addContact = async (body) => {
     return contact;
 }
 const removeContact = async (contactId, owner) => {
+    console.log(contactId);
     const deletedContact = await Contact.findOneAndRemove({ contactId, owner });
     if (!deletedContact) {
         throw new NotFound("Not Found")
