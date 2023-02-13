@@ -79,7 +79,7 @@ const patchUsersSubscription = async (owner, body) => {
 
 }
 const patchUserAvatar = async (owner, file, params) => {
-    const host = "localhost:3000/avatars"
+    const host = "localhost:3000/avatars/"
     const user = await User.findById(owner);
     if (!user) {
         throw new NotAuthorized("Not authorized");
@@ -88,22 +88,20 @@ const patchUserAvatar = async (owner, file, params) => {
         throw new WrongParametersError('need file')
 
     }
-    const avatarURL = user.email + `=${file.filename}`;
+    const avatarURL = host + user.email + `=${file.filename}`;
     const [avatarName, extension] = file.filename.split('.');
-    await User.findByIdAndUpdate(owner, { avatarURL: `${host}/${avatarURL}` })
+    await User.findByIdAndUpdate(owner, { avatarURL: avatarURL })
     const updatedStatusUser = await User.findById(owner);
     const oldPath = path.resolve(`./tmp/${avatarName}.${extension}`);
-    const newPath = path.resolve(`./public/avatars/${avatarURL}`)
+    const newPath = path.resolve(`./public/avatars/${user.email + "=" + avatarName}.${extension}`);
     if (updatedStatusUser) {
-        console.log(updatedStatusUser);
         Jimp.read(oldPath, (err, lenna) => {
-
             if (err) throw err;
             lenna
-                .resize(256, 256)
+                .resize(250, 250)
                 .write(newPath);
         });
-        return `${host}/${avatarURL}`;
+        return avatarURL;
     }
 }
 
