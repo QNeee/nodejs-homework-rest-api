@@ -3,7 +3,7 @@ const { NotAuthorized } = require('../helpers/errors')
 
 const authMiddleware = async (req, res, next) => {
     try {
-        const [tokenType, token] = req.headers.authorization.split(' ');
+        const [, token] = req.headers.authorization.split(' ');
         if (!token) {
             next(new NotAuthorized('Please ,provide a token'));
         }
