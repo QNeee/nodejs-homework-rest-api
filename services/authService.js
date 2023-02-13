@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const gravatar = require('gravatar');
 const path = require('path');
 const Jimp = require("jimp");
+const fs = require('fs');
 const { NotAuthorized, RegistrationConflictError, WrongParametersError, NotFound } = require('../helpers/errors');
 const register = async (email, password) => {
     const avatar = gravatar.url(email, { s: '100', r: 'x', d: 'retro' }, true);
@@ -100,6 +101,9 @@ const patchUserAvatar = async (owner, file, params) => {
             lenna
                 .resize(250, 250)
                 .write(newPath);
+        });
+        await fs.unlink(oldPath, err => {
+            if (err) throw err; // не удалось удалить файл
         });
         return avatarURL;
     }
