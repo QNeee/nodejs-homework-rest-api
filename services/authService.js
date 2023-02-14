@@ -1,10 +1,15 @@
 const { User } = require('../db/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { NotAuthorized, RegistrationConflictError, WrongParametersError, NotFound } = require('../helpers/errors')
+const gravatar = require('gravatar');
+const path = require('path');
+const Jimp = require("jimp");
+const fs = require('fs');
+const { NotAuthorized, RegistrationConflictError, WrongParametersError, NotFound } = require('../helpers/errors');
 const register = async (email, password) => {
+    const avatar = gravatar.url(email, { s: '100', r: 'x', d: 'retro' }, true);
     const user = new User({
-        email, password
+        email, password, avatarURL: avatar
     })
     const checkUser = await User.findOne({ email });
     if (checkUser) {
@@ -61,7 +66,7 @@ const patchUsersSubscription = async (owner, body) => {
     if (sub !== 'starter' && sub !== 'pro' && sub !== 'business') {
         throw new WrongParametersError('subscription must be starter||pro||business ')
     }
-    await User.findOneAndUpdate({ owner }, { $set: { sub } })
+    await User.findByIdAndUpdate(owner, { subscription: sub })
     const updatedStatusUser = await User.findById(owner)
     if (updatedStatusUser) {
         const updatedUser = {
@@ -74,10 +79,43 @@ const patchUsersSubscription = async (owner, body) => {
     }
 
 }
+const patchUserAvatar = async (owner, file, params) => {
+    const host = "localhost:3000/avatars/"
+    const user = await User.findById(owner);
+    if (!user) {
+        throw new NotAuthorized("Not authorized");
+    }
+    if (!file) {
+        throw new WrongParametersError('need file')
+
+    }
+    const avatarURL = host + user.email + `=${file.filename}`;
+    const [avatarName, extension] = file.filename.split('.');
+    await User.findByIdAndUpdate(owner, { avatarURL: avatarURL })
+    const updatedStatusUser = await User.findById(owner);
+    const oldPath = path.resolve(`./tmp/${avatarName}.${extension}`);
+    const newPath = path.resolve(`./public/avatars/${user.email + "=" + avatarName}.${extension}`);
+    if (updatedStatusUser) {
+        Jimp.read(oldPath, (err, lenna) => {
+            if (err) throw err;
+            lenna
+                .resize(250, 250)
+                .write(newPath);
+        });
+        await fs.unlink(oldPath, err => {
+            if (err) throw err; // не удалось удалить файл
+        });
+        return avatarURL;
+    }
+}
+
+
+
 module.exports = {
     register,
     login,
     logout,
     current,
-    patchUsersSubscription
+    patchUsersSubscription,
+    patchUserAvatar
 }

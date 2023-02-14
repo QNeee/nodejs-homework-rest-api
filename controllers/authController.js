@@ -1,10 +1,11 @@
-const { login, register, logout, current, patchUsersSubscription } = require('../services/authService')
+const { login, register, logout, current, patchUsersSubscription, patchUserAvatar } = require('../services/authService')
 const registerController = async (req, res) => {
     const { email, password } = req.body;
     const newUser = await register(email, password);
     const user = {
         email: newUser.email,
-        subscription: newUser.subscription
+        subscription: newUser.subscription,
+        avatarURL: newUser.avatarURL
     }
     return res.status(201).json({ user })
 
@@ -34,10 +35,17 @@ const usersController = async (req, res) => {
     const response = await patchUsersSubscription(owner, req.body);
     return res.status(200).json(response);
 }
+const patchAvatarsController = async (req, res) => {
+    const { _id: owner } = req.user;
+    const file = req.file;
+    const response = await patchUserAvatar(owner, file);
+    return res.status(200).json({ avatarURL: response });
+}
 module.exports = {
     registerController,
     loginController,
     logOutController,
     currentController,
-    usersController
+    usersController,
+    patchAvatarsController
 }
