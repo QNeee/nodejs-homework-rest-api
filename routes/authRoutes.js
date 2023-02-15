@@ -4,10 +4,10 @@ const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const { registerController,
-    loginController, patchAvatarsController, logOutController, currentController, usersController } = require('../controllers/authController')
+    loginController, registerConfirmController, resendConfirmController, patchAvatarsController, logOutController, currentController, usersController } = require('../controllers/authController')
 const { authMiddleware } = require('../middlewares/authMiddleware')
 const { asyncWrapper } = require('../helpers/apiHelpers')
-const { registerValidation } = require('../middlewares/validationmiddleware')
+const { registerValidation, resendValidation } = require('../middlewares/validationmiddleware')
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, path.resolve('./tmp'));
@@ -23,5 +23,7 @@ router.post('/login', registerValidation, asyncWrapper(loginController));
 router.post('/logout', authMiddleware, logOutController)
 router.post('/current', authMiddleware, currentController);
 router.patch('/users', authMiddleware, asyncWrapper(usersController));
+router.post('/users/verify', resendValidation, asyncWrapper(resendConfirmController));
+router.get('/users/verify/:verificationToken', asyncWrapper(registerConfirmController));
 router.patch('/users/avatar', authMiddleware, avatarMiddleware.single('avatar'), asyncWrapper(patchAvatarsController));
 module.exports = router;

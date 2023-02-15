@@ -10,7 +10,7 @@ class NotFound extends ContactsNode {
         this.status = 404;
     }
 }
-class ValidationError extends ContactsNode {
+class BadRequest extends ContactsNode {
     constructor(message) {
         super(message);
         this.status = 400;
@@ -36,7 +36,7 @@ class RegistrationConflictError extends ContactsNode {
 }
 module.exports = {
     ContactsNode,
-    ValidationError,
+    BadRequest,
     WrongParametersError,
     NotAuthorized, RegistrationConflictError, NotFound
 }
