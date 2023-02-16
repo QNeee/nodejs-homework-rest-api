@@ -1,4 +1,4 @@
-const { login, register, logout, current, patchUsersSubscription, patchUserAvatar } = require('../services/authService')
+const { login, register, resendConfirm, registerConfirm, logout, current, patchUsersSubscription, patchUserAvatar } = require('../services/authService')
 const registerController = async (req, res) => {
     const { email, password } = req.body;
     const newUser = await register(email, password);
@@ -9,6 +9,17 @@ const registerController = async (req, res) => {
     }
     return res.status(201).json({ user })
 
+}
+const registerConfirmController = async (req, res) => {
+    const { verificationToken } = req.params;
+    await registerConfirm(verificationToken);
+    return res.status(200).json({ message: 'Verification successful' });
+
+}
+const resendConfirmController = async (req, res) => {
+    const { email } = req.body;
+    await resendConfirm(email);
+    return res.status(200).json({ message: "Verification email sent" })
 }
 const loginController = async (req, res) => {
     const { email, password } = req.body;
@@ -47,5 +58,7 @@ module.exports = {
     logOutController,
     currentController,
     usersController,
-    patchAvatarsController
+    patchAvatarsController,
+    registerConfirmController,
+    resendConfirmController
 }
